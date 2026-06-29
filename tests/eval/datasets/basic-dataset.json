@@ -1,0 +1,136 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "SCN01_STP_CLEAN",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Arjun Patel\",\n  \"dob\": \"1959-01-01\",\n  \"ssn\": \"999-10-1000\",\n  \"provider_name\": \"Dr Ravi Sharma Cardiology\",\n  \"provider_npi\": \"3100003037\",\n  \"claim_id\": \"CLM1001\",\n  \"soap_note\": \"Chest discomfort follow-up; ECG ordered; CAD history reviewed\",\n  \"lines\": [\n    {\n      \"cpt\": \"99214\",\n      \"icd\": \"I25.10\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 220.0\n    },\n    {\n      \"cpt\": \"93000\",\n      \"icd\": \"I25.10\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 200.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN02_MISSING_MODIFIER",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Meera Das\",\n  \"dob\": \"1988-01-01\",\n  \"ssn\": \"999-11-1001\",\n  \"provider_name\": \"Dr Asha Menon Family Medicine\",\n  \"provider_npi\": \"2100002023\",\n  \"claim_id\": \"CLM1002\",\n  \"soap_note\": \"Hypertension follow-up plus same-day lesion destruction; separate E/M documented\",\n  \"lines\": [\n    {\n      \"cpt\": \"99213\",\n      \"icd\": \"L98.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 165.0\n    },\n    {\n      \"cpt\": \"17110\",\n      \"icd\": \"L98.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 170.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN03_MUE_EXCESS_UNITS",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Farhan Ali\",\n  \"dob\": \"1954-01-01\",\n  \"ssn\": \"999-12-1002\",\n  \"provider_name\": \"Sunrise Ambulatory Surgery Center\",\n  \"provider_npi\": \"4100004041\",\n  \"claim_id\": \"CLM1003\",\n  \"soap_note\": \"Therapy session after knee pain; billed units exceed documented time\",\n  \"lines\": [\n    {\n      \"cpt\": \"97110\",\n      \"icd\": \"M17.11\",\n      \"units\": 8,\n      \"modifier\": \"GP\",\n      \"charge\": 1200.0\n    },\n    {\n      \"cpt\": \"97530\",\n      \"icd\": \"M17.11\",\n      \"units\": 6,\n      \"modifier\": \"GP\",\n      \"charge\": 650.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN04_MED_NECESSITY_FAIL",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Maya Rao\",\n  \"dob\": \"1968-01-01\",\n  \"ssn\": \"999-13-1003\",\n  \"provider_name\": \"Sunrise Ambulatory Surgery Center\",\n  \"provider_npi\": \"4100004041\",\n  \"claim_id\": \"CLM1004\",\n  \"soap_note\": \"Diabetic neuropathy symptoms; lumbar MRI ordered without red flag evidence\",\n  \"lines\": [\n    {\n      \"cpt\": \"72148\",\n      \"icd\": \"E11.40\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 2400.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN05_NPI_MISMATCH",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Nina George\",\n  \"dob\": \"1982-01-01\",\n  \"ssn\": \"999-14-1004\",\n  \"provider_name\": \"Dr Maya Iyer Orthopedics\",\n  \"provider_npi\": \"5100005052\",\n  \"claim_id\": \"CLM1005\",\n  \"soap_note\": \"Left knee pain; x-ray and injection documented\",\n  \"lines\": [\n    {\n      \"cpt\": \"73562\",\n      \"icd\": \"M17.12\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 425.0\n    },\n    {\n      \"cpt\": \"20610\",\n      \"icd\": \"M17.12\",\n      \"units\": 1,\n      \"modifier\": \"LT\",\n      \"charge\": 500.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN06_COVERAGE_TERMED",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Sara Thomas\",\n  \"dob\": \"1994-01-01\",\n  \"ssn\": \"999-15-1005\",\n  \"provider_name\": \"Dr Asha Menon Family Medicine\",\n  \"provider_npi\": \"2100002023\",\n  \"claim_id\": \"CLM1006\",\n  \"soap_note\": \"Migraine medication refill\",\n  \"lines\": [\n    {\n      \"cpt\": \"99213\",\n      \"icd\": \"G43.909\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 260.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN07_LONG_IP_EXPOSURE",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Omar Khan\",\n  \"dob\": \"1972-01-01\",\n  \"ssn\": \"999-16-1006\",\n  \"provider_name\": \"Northlake General Hospital\",\n  \"provider_npi\": \"1100001019\",\n  \"claim_id\": \"CLM1007\",\n  \"soap_note\": \"Sepsis due to pneumonia; ICU exposure; IV antibiotics and serial imaging\",\n  \"lines\": [\n    {\n      \"cpt\": \"MS-DRG-871\",\n      \"icd\": \"A41.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 31500.0\n    },\n    {\n      \"cpt\": \"71045\",\n      \"icd\": \"J18.9\",\n      \"units\": 3,\n      \"modifier\": \"\",\n      \"charge\": 900.0\n    },\n    {\n      \"cpt\": \"J0696\",\n      \"icd\": \"A41.9\",\n      \"units\": 7,\n      \"modifier\": \"\",\n      \"charge\": 5800.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN08_CARDIAC_IP_CLEAN_WITH_REHAB_AUTH",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Dev Singh\",\n  \"dob\": \"1957-01-01\",\n  \"ssn\": \"999-17-1007\",\n  \"provider_name\": \"Northlake General Hospital\",\n  \"provider_npi\": \"1100001019\",\n  \"claim_id\": \"CLM1008\",\n  \"soap_note\": \"NSTEMI admission with cardiac intervention and rehab authorization\",\n  \"lines\": [\n    {\n      \"cpt\": \"MS-DRG-280\",\n      \"icd\": \"I21.4\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 43200.0\n    },\n    {\n      \"cpt\": \"93798\",\n      \"icd\": \"I21.4\",\n      \"units\": 4,\n      \"modifier\": \"\",\n      \"charge\": 3600.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN09_REPEAT_VISIT_PROVIDER_PATTERN",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Meera Das\",\n  \"dob\": \"1988-01-01\",\n  \"ssn\": \"999-18-1008\",\n  \"provider_name\": \"Dr Asha Menon Family Medicine\",\n  \"provider_npi\": \"2100002023\",\n  \"claim_id\": \"CLM1009\",\n  \"soap_note\": \"Repeat lesion procedure with separate problem-oriented visit documented\",\n  \"lines\": [\n    {\n      \"cpt\": \"99213\",\n      \"icd\": \"L98.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 150.0\n    },\n    {\n      \"cpt\": \"17000\",\n      \"icd\": \"L57.0\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 160.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN10_ONCOLOGY_AUTH_GAP",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Kabir Bose\",\n  \"dob\": \"1979-01-01\",\n  \"ssn\": \"999-19-1009\",\n  \"provider_name\": \"Metro Renal and Infusion Center\",\n  \"provider_npi\": \"6100006066\",\n  \"claim_id\": \"CLM1010\",\n  \"soap_note\": \"Colon cancer infusion; genetic panel requested without PA record\",\n  \"lines\": [\n    {\n      \"cpt\": \"96413\",\n      \"icd\": \"C18.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 1850.0\n    },\n    {\n      \"cpt\": \"81210\",\n      \"icd\": \"C18.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 5350.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN11_SNF_TRANSITION_ATTACHMENT_GAP",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Anika Sen\",\n  \"dob\": \"1951-01-01\",\n  \"ssn\": \"999-20-1010\",\n  \"provider_name\": \"Northlake General Hospital\",\n  \"provider_npi\": \"1100001019\",\n  \"claim_id\": \"CLM1011\",\n  \"soap_note\": \"Stroke admission with SNF transfer; discharge packet incomplete\",\n  \"lines\": [\n    {\n      \"cpt\": \"99233\",\n      \"icd\": \"I63.9\",\n      \"units\": 3,\n      \"modifier\": \"\",\n      \"charge\": 1900.0\n    },\n    {\n      \"cpt\": \"A0428\",\n      \"icd\": \"I63.9\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 13500.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "SCN12_OON_CONTRACT_EXCLUSION",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\n  \"patient_name\": \"Rohan Mehta\",\n  \"dob\": \"1997-01-01\",\n  \"ssn\": \"999-21-1011\",\n  \"provider_name\": \"Dr Maya Iyer Orthopedics\",\n  \"provider_npi\": \"5100005052\",\n  \"claim_id\": \"CLM1012\",\n  \"soap_note\": \"Lumbar strain after lifting; non-emergency OON orthopedic visit\",\n  \"lines\": [\n    {\n      \"cpt\": \"99203\",\n      \"icd\": \"S39.012A\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 280.0\n    },\n    {\n      \"cpt\": \"72100\",\n      \"icd\": \"S39.012A\",\n      \"units\": 1,\n      \"modifier\": \"\",\n      \"charge\": 500.0\n    }\n  ]\n}"
+          }
+        ]
+      }
+    }
+  ]
+}

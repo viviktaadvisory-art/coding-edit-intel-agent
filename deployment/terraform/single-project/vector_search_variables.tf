@@ -1,0 +1,32 @@
+
+
+variable "pipelines_roles" {
+  description = "List of roles to assign to the Vertex AI runner service account"
+  type        = list(string)
+  default = [
+    "roles/storage.admin",
+    "roles/run.invoker",
+    "roles/aiplatform.user",
+    "roles/discoveryengine.admin",
+    "roles/logging.logWriter",
+    "roles/artifactregistry.writer",
+    "roles/bigquery.dataEditor",
+    "roles/bigquery.jobUser",
+    "roles/bigquery.readSessionUser",
+    "roles/bigquery.connectionAdmin",
+    "roles/vectorsearch.dataObjectWriter"
+  ]
+}
+
+variable "vector_search_location" {
+  type        = string
+  description = "The location for the Vector Search 2.0 Collection."
+  default     = "us-central1"
+}
+
+variable "vector_search_collection_id" {
+  type        = string
+  description = "The ID for the Vector Search 2.0 Collection."
+  default     = "coding-edit-intel-agent-collection"
+}
+
