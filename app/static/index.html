@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShieldGuard: Medical Coding & Edits Intelligence Agent</title>
+  <!-- Import Outfit and Inter Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d1a;
+      --bg-panel: #0f162e;
+      --bg-subpanel: #182245;
+      --border-color: rgba(99, 102, 241, 0.15);
+      --border-glow: rgba(99, 102, 241, 0.25);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --secondary: #a855f7;
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.2);
+      --warning: #f59e0b;
+      --warning-glow: rgba(245, 158, 11, 0.2);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --font-heading: 'Outfit', 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-subpanel);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* Navigation Header */
+    header {
+      background: rgba(15, 22, 46, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-tab:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+    }
+
+    .nav-tab.active {
+      background: var(--primary-glow);
+      border-color: var(--primary);
+      color: var(--text-primary);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .engine-switcher {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subpanel);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+    }
+
+    .engine-select {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 4px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .badge-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-status.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .badge-status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .badge-status.disconnected .badge-status-dot {
+      background-color: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    /* Container layout */
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: none; /* Controlled by JS tab switching */
+    }
+
+    .dashboard-container.active {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 1.5rem;
+    }
+
+    .single-column-container {
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: none;
+    }
+
+    .single-column-container.active {
+      display: block;
+    }
+
+    /* Left Sidebar: Controls & Preset Claims */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .panel-title span {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    /* Preset scenarios list */
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .preset-card {
+      background: var(--bg-subpanel);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .preset-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(255, 255, 255, 0.02);
+      transform: translateY(-2px);
+    }
+
+    .preset-card.active {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.08);
+      box-shadow: inset 0 0 8px rgba(99, 102, 241, 0.15);
+    }
+
+    .preset-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preset-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .badge-result {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-result.paid { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .badge-result.adjusted { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .badge-result.denied { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg-subpanel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      font-family: var(--font-body);
+      line-height: 1.4;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    /* Billed Codes Grid in Input */
+    .code-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .code-entry-row {
+      display: grid;
+      grid-template-columns: 2.2fr 1.5fr 1fr 1.2fr 1.5fr;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .code-entry-header {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    /* Main Area Grid layout */
+    .main-workspace {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 1.5rem;
+    }
+
+    .workspace-top-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* De-identification Panel */
+    .deid-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .deid-item {
+      background: var(--bg-subpanel);
+      border-left: 3px solid var(--primary);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .deid-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .deid-val {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deid-val .redacted-value {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Sequential Pipeline Stepper */
+    .pipeline-stepper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .step-node {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-subpanel);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .step-node.pending {
+      opacity: 0.4;
+    }
+
+    .step-node.active {
+      opacity: 1;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+      transform: translateX(4px);
+    }
+
+    .step-node.completed {
+      opacity: 1;
+      border-left: 3px solid var(--success);
+    }
+
+    .step-node.flagged {
+      opacity: 1;
+      border-left: 3px solid var(--warning);
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 2px solid var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .step-node.active .step-icon {
+      border-color: var(--primary);
+      color: var(--primary);
+      animation: stepPulse 1.5s infinite;
+    }
+
+    .step-node.completed .step-icon {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .step-node.flagged .step-icon {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    @keyframes stepPulse {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-name {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .step-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .step-status-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .step-node.completed .step-status-text { color: var(--success); }
+    .step-node.flagged .step-status-text { color: var(--warning); }
+    .step-node.active .step-status-text { color: var(--primary); }
+
+    /* Results layout */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Adjudication Decision Card */
+    .decision-card {
+      background: linear-gradient(135deg, var(--bg-panel), rgba(15, 22, 46, 0.8));
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .decision-card.paid { border-top: 4px solid var(--success); }
+    .decision-card.adjusted { border-top: 4px solid var(--warning); }
+    .decision-card.denied { border-top: 4px solid var(--danger); }
+
+    .decision-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .decision-status {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .decision-status.paid { color: var(--success); }
+    .decision-status.adjusted { color: var(--warning); }
+    .decision-status.denied { color: var(--danger); }
+
+    .decision-financials {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      background: var(--bg-subpanel);
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .financial-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .financial-lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .financial-val {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 0.1rem;
+    }
+
+    /* Code Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    th {
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+    }
+
+    td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      vertical-align: middle;
+    }
+
+    /* SNOMED CT Mapping Visualizer */
+    .snomed-pill {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #d8b4fe;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Remediation Widget */
+    .remediation-box {
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px dashed var(--primary);
+      border-radius: 8px;
+      padding: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .remediation-title {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .remediation-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--bg-subpanel);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-large {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      width: 100%;
+      justify-content: center;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Telemetry Observability Log Console */
+    .console-panel {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #38bdf8;
+      height: 250px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .console-line {
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    .console-time {
+      color: #6b7280;
+      margin-right: 0.5rem;
+    }
+
+    .console-tag {
+      padding: 0.05rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      margin-right: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .console-tag.info { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .console-tag.success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .console-tag.warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .console-tag.danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+    /* Provider Coding Pattern Panel */
+    .pattern-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .provider-meta-info {
+      font-size: 0.8rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .metric-box {
+      background: var(--bg-subpanel);
+      padding: 0.6rem;
+      border-radius: 6px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .metric-title {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .metric-val {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 0.1rem;
+    }
+
+    .metric-val.high-risk { color: var(--danger); }
+    .metric-val.low-risk { color: var(--success); }
+
+    /* Custom SVG chart */
+    .chart-container {
+      height: 100px;
+      background: var(--bg-subpanel);
+      border-radius: 6px;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .chart-bars {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 70px;
+    }
+
+    .chart-bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+    }
+
+    .bar-wrapper {
+      height: 50px;
+      width: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      width: 100%;
+      border-radius: 3px;
+      transition: height 0.5s ease;
+    }
+
+    .bar-fill.provider { background: var(--primary); }
+    .bar-fill.peer { background: var(--text-muted); }
+
+    .chart-label {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 0.65rem;
+      margin-top: 0.4rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--text-muted);
+    }
+
+    .legend-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    /* Unit Tests Panel styling */
+    .test-suite-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: var(--bg-panel);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .test-summary-stats {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .test-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .test-stat-val {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .test-results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .test-row {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .test-row.passed {
+      border-left: 4px solid var(--success);
+    }
+
+    .test-row.failed {
+      border-left: 4px solid var(--danger);
+      background: rgba(239, 68, 68, 0.02);
+    }
+
+    .test-info-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-name-text {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .test-desc-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .test-status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .test-status-badge.pass {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .test-status-badge.fail {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    /* Modal / Alert overlays */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--primary);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 1000;
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    .toast-icon {
+      color: var(--primary);
+    }
+
+    .toast-text {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">ShieldGuard</h1>
+        <p style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Payer Claim Intelligence Agent</p>
+      </div>
+    </div>
+
+    <!-- Dual Mode Selector Switch -->
+    <div class="engine-switcher">
+      <span style="font-weight: 600; color: var(--text-secondary);">Agent Engine:</span>
+      <select id="engine-mode" class="engine-select" onchange="switchEngineMode(this.value)">
+        <option value="simulated">Local Simulation</option>
+        <option value="live">Live FastAPI Server</option>
+      </select>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('dashboard')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/></svg>
+        Agent Dashboard
+      </button>
+      <button class="nav-tab" onclick="switchTab('tests')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+        Automated Unit Tests
+      </button>
+    </div>
+
+    <div class="badge-status" id="connection-status">
+      <div class="badge-status-dot"></div>
+      <span id="connection-text">IAM Proxy & De-ID Active</span>
+    </div>
+  </header>
+
+  <!-- Agent Dashboard View -->
+  <main id="tab-dashboard" class="dashboard-container active">
+    
+    <!-- Sidebar: Preset Scenarios & Intake Form -->
+    <div class="sidebar">
+      
+      <!-- Preset Scenarios -->
+      <div class="panel">
+        <div class="panel-title">
+          Preset Scenarios <span>Select Case</span>
+        </div>
+        <div class="preset-list">
+          <button class="preset-card active" onclick="loadScenario(1)">
+            <div class="preset-title">
+              Case 1: Clean Claim
+              <span class="badge-result paid">Paid</span>
+            </div>
+            <div class="preset-meta">Routine knee OA visit & therapy. Approved.</div>
+          </button>
+          <button class="preset-card" onclick="loadScenario(2)">
+            <div class="preset-title">
+              Case 2: NCCI Unbundling
+              <span class="badge-result adjusted">Adjusted</span>
+            </div>
+            <div class="preset-meta">E/M + Lesion removal. Missing modifier -25.</div>
+          </button>
+          <button class="preset-card" onclick="loadScenario(3)">
+            <div class="preset-title">
+              Case 3: MUE Exceeded
+              <span class="badge-result adjusted">Adjusted</span>
+            </div>
+            <div class="preset-meta">Billed 3 units of blood draw (limit: 1).</div>
+          </button>
+          <button class="preset-card" onclick="loadScenario(4)">
+            <div class="preset-title">
+              Case 4: Medical Necessity
+              <span class="badge-result denied">Denied</span>
+            </div>
+            <div class="preset-meta">Billed cardiac stress test for facial acne.</div>
+          </button>
+          <button class="preset-card" onclick="loadScenario(5)">
+            <div class="preset-title">
+              Case 5: Upcoding Pattern
+              <span class="badge-result adjusted">Adjusted</span>
+            </div>
+            <div class="preset-meta">Billed level 5 E/M for seasonal allergy visit.</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Claim Intake (IAM boundary input details) -->
+      <div class="panel">
+        <div class="panel-title">
+          Intake Details <span>PII Boundary</span>
+        </div>
+        
+        <div class="form-group">
+          <label>Patient Name (PHI)</label>
+          <input type="text" id="intake-name" class="form-control" value="John Miller">
+        </div>
+        
+        <div class="row">
+          <div class="form-group">
+            <label>DOB (PHI)</label>
+            <input type="text" id="intake-dob" class="form-control" value="04/12/1968">
+          </div>
+          <div class="form-group">
+            <label>SSN (PHI)</label>
+            <input type="text" id="intake-ssn" class="form-control" value="485-99-2810">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Provider Name</label>
+          <input type="text" id="intake-provider" class="form-control" value="Dr. Sarah Jenkins, MD">
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Provider NPI</label>
+            <input type="text" id="intake-npi" class="form-control" value="1827364509">
+          </div>
+          <div class="form-group">
+            <label>Claim ID</label>
+            <input type="text" id="intake-claimid" class="form-control" value="CLM-7782910">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace (Processing steps & Results) -->
+    <div class="main-workspace">
+      
+      <!-- Top Row: SOAP note input & De-ID Viewer -->
+      <div class="workspace-top-row">
+        <!-- SOAP Note Input -->
+        <div class="panel" style="display: flex; flex-direction: column;">
+          <div class="panel-title">Clinical SOAP Note</div>
+          <textarea id="intake-soap" class="form-control" style="flex: 1; min-height: 160px; font-size: 0.8rem;" placeholder="Enter clinical encounter note..."></textarea>
+          
+          <!-- Billed Codes Table Inside Input -->
+          <div style="margin-top: 1rem;">
+            <div class="panel-title" style="margin-bottom: 0.5rem; font-size: 0.9rem; border: none; padding: 0;">Claimed Line Items</div>
+            <div class="code-entry-row code-entry-header">
+              <div>CPT/HCPCS</div>
+              <div>ICD-10 Ref</div>
+              <div>Units</div>
+              <div>Modifier</div>
+              <div>Charge</div>
+            </div>
+            <div class="code-entries" id="code-entries-container">
+              <!-- Dynamically populated rows -->
+            </div>
+          </div>
+
+          <button class="btn btn-large" style="margin-top: 1rem;" onclick="runPipeline()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            Run Validation Pipeline
+          </button>
+        </div>
+
+        <!-- De-identification & Pipeline Steps -->
+        <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="panel-title">Privacy Protection & De-ID</div>
+            <div class="deid-grid">
+              <div class="deid-item">
+                <div class="deid-label">Pseudo Patient ID</div>
+                <div class="deid-val" id="deid-pseudoid">PP-XXXX-X</div>
+              </div>
+              <div class="deid-item">
+                <div class="deid-label">Case Reference ID</div>
+                <div class="deid-val" id="deid-caseid">REF-XXXX-XX</div>
+              </div>
+              <div class="deid-item">
+                <div class="deid-label">PII Redaction Status</div>
+                <div class="deid-val" id="deid-piistatus">Inactive</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <div class="panel-title">Sequential Pipeline Flow</div>
+            <div class="pipeline-stepper" id="pipeline-stepper-container">
+              <div class="step-node pending" id="step-0">
+                <div class="step-icon">1</div>
+                <div class="step-info">
+                  <div class="step-name">IAM Boundary & De-ID</div>
+                  <div class="step-desc">Redact PII & map to pseudo identifier</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-1">
+                <div class="step-icon">2</div>
+                <div class="step-info">
+                  <div class="step-name">SOAP Symptom Analysis</div>
+                  <div class="step-desc">Extract symptoms & map to SNOMED CT</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-2">
+                <div class="step-icon">3</div>
+                <div class="step-info">
+                  <div class="step-name">Correct Coding Check</div>
+                  <div class="step-desc">Verify CPT, ICD-10, LOINC, HCPCS, DRG</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-3">
+                <div class="step-icon">4</div>
+                <div class="step-info">
+                  <div class="step-name">NCCI Bundling Checks</div>
+                  <div class="step-desc">Verify Procedure-to-Procedure (PTP) edits</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-4">
+                <div class="step-icon">5</div>
+                <div class="step-info">
+                  <div class="step-name">Medically Unlikely Edits</div>
+                  <div class="step-desc">Verify maximum allowed daily units (MUE)</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-5">
+                <div class="step-icon">6</div>
+                <div class="step-info">
+                  <div class="step-name">Medical Necessity Check</div>
+                  <div class="step-desc">Validate CPT coverage for ICD conditions</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-6">
+                <div class="step-icon">7</div>
+                <div class="step-info">
+                  <div class="step-name">Provider Pattern Audit</div>
+                  <div class="step-desc">Verify upcoding & modifier abuse risk</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+              <div class="step-node pending" id="step-7">
+                <div class="step-icon">8</div>
+                <div class="step-info">
+                  <div class="step-name">Final Adjudication</div>
+                  <div class="step-desc">Assign CARC/RARC codes & remediation</div>
+                </div>
+                <div class="step-status-text">Pending</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Validation Results & Observability Logs -->
+      <div class="results-grid">
+        
+        <!-- Adjudication Summary & Remediation -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="panel decision-card" id="decision-card-element">
+            <div class="decision-header">
+              <div>
+                <h3 class="decision-status" id="decision-status-text">No Claim Processed</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);" id="decision-meta">Run the validation pipeline to audit claim.</p>
+              </div>
+              <div id="decision-badge-container"></div>
+            </div>
+
+            <div class="decision-financials">
+              <div class="financial-box">
+                <span class="financial-lbl">Total Billed</span>
+                <span class="financial-val" id="financial-billed">$0.00</span>
+              </div>
+              <div class="financial-box">
+                <span class="financial-lbl">Allowed / Paid</span>
+                <span class="financial-val" id="financial-paid" style="color: var(--success);">$0.00</span>
+              </div>
+              <div class="financial-box">
+                <span class="financial-lbl">Patient Copay</span>
+                <span class="financial-val" id="financial-patient" style="color: var(--warning);">$0.00</span>
+              </div>
+            </div>
+
+            <!-- Adjudicated Line Items Details -->
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Line</th>
+                    <th>Code / Desc</th>
+                    <th>Symptom (SNOMED CT)</th>
+                    <th>Units</th>
+                    <th>CARC/RARC</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="claim-results-table">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No adjudicated data.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Edit Remediation Box -->
+            <div class="remediation-box" id="remediation-panel" style="display: none;">
+              <div class="remediation-title">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/></svg>
+                Edit Remediation Action Plan
+              </div>
+              <p class="remediation-text" id="remediation-description">No corrections needed.</p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-success" id="btn-apply-remediation" onclick="applyRemediation()">Apply Recommended Edits</button>
+                <button class="btn btn-secondary" onclick="sendToProvider()">Notify Provider via IAM Proxy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- HITL Analyst Review Gate -->
+          <div class="panel" id="hitl-analyst-panel" style="display: none; border-top: 4px solid var(--warning); margin-bottom: 1rem; background: rgba(245, 158, 11, 0.05);">
+            <div class="panel-title" style="color: var(--warning);">
+              Human-in-the-Loop Review Task <span>Pending Action</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;" id="hitl-description">Adverse determination / clinical validation mismatch requires human review.</p>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-success" onclick="resolveHITL('Approve')">Approve Claim</button>
+              <button class="btn btn-danger" onclick="resolveHITL('Deny')">Deny/Reject Claim</button>
+            </div>
+          </div>
+
+          <!-- Compliance & Communication Panel -->
+          <div class="panel" id="compliance-communication-panel" style="display: none; margin-bottom: 1rem;">
+            <div class="panel-title">AI Governance, Audit & Communication</div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div>
+                <div class="deid-label">Generated Communication Draft</div>
+                <pre id="compliance-communication-text" style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-secondary); white-space: pre-wrap; margin-top: 0.4rem; max-height: 150px; overflow-y: auto; background: var(--bg-subpanel); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);"></pre>
+              </div>
+              <div>
+                <div class="deid-label">Compliance Evidence Report (ISO/IEC 42001 & HIPAA Audit Trail)</div>
+                <pre id="compliance-report-json" style="font-family: var(--font-mono); font-size: 0.75rem; color: #10b981; white-space: pre-wrap; margin-top: 0.4rem; max-height: 150px; overflow-y: auto; background: var(--bg-subpanel); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);"></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Provider Coding Pattern Analytics Card -->
+          <div class="panel pattern-card">
+            <div>
+              <div class="panel-title">Provider Coding Pattern Risk</div>
+              <div class="provider-meta-info" id="provider-pattern-info">
+                No provider audited.
+              </div>
+              <div class="metric-grid">
+                <div class="metric-box">
+                  <div class="metric-title">Level 5 Visit Frequency</div>
+                  <div class="metric-val" id="metric-level5">--</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-title">Modifier -25 Frequency</div>
+                  <div class="metric-val" id="metric-mod25">--</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SVG Peer Comparison Chart -->
+            <div>
+              <div class="chart-container">
+                <div class="chart-bars">
+                  <!-- Bar 1 -->
+                  <div class="chart-bar-col">
+                    <div class="bar-wrapper">
+                      <div class="bar-fill provider" id="chart-bar-1" style="height: 0%;"></div>
+                    </div>
+                    <div class="chart-label">Level 5</div>
+                  </div>
+                  <!-- Bar 2 -->
+                  <div class="chart-bar-col">
+                    <div class="bar-wrapper">
+                      <div class="bar-fill peer" id="chart-bar-2" style="height: 0%;"></div>
+                    </div>
+                    <div class="chart-label">Peer Lvl 5</div>
+                  </div>
+                  <!-- Bar 3 -->
+                  <div class="chart-bar-col">
+                    <div class="bar-wrapper">
+                      <div class="bar-fill provider" id="chart-bar-3" style="height: 0%;"></div>
+                    </div>
+                    <div class="chart-label">Mod -25</div>
+                  </div>
+                  <!-- Bar 4 -->
+                  <div class="chart-bar-col">
+                    <div class="bar-wrapper">
+                      <div class="bar-fill peer" id="chart-bar-4" style="height: 0%;"></div>
+                    </div>
+                    <div class="chart-label">Peer Mod</div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item"><div class="legend-color" style="background: var(--primary);"></div>Provider</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--text-muted);"></div>Peer Average</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry Logs / Audit Trail -->
+        <div class="panel" style="display: flex; flex-direction: column; height: 100%;">
+          <div class="panel-title">
+            Observability Audit Logs
+            <button class="btn btn-secondary" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;" onclick="replayTransaction()">Replay Transaction</button>
+          </div>
+          <div class="console-panel" id="console-logs">
+            <div class="console-line"><span class="console-time">13:55:26</span><span class="console-tag info">Info</span>Agent system initialized. Select scenario and click "Run Validation Pipeline".</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Automated Unit Tests View -->
+  <div id="tab-tests" class="single-column-container">
+    <div class="test-suite-header">
+      <div>
+        <h2 style="font-family: var(--font-heading); font-weight: 700;">ShieldGuard Unit Test Suite</h2>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">Automated validation checks running inside the browser engine.</p>
+      </div>
+      <button class="btn" onclick="runUnitTests()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-7.1 2h3.932a.25.25 0 0 0 .192-.41L6.592 6.23a.25.25 0 0 0-.384 0L4.242 8.59a.25.25 0 0 0 .192.41z"/><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>
+        Execute Test Suite
+      </button>
+    </div>
+
+    <div class="panel" style="margin-bottom: 1.5rem;">
+      <div class="panel-title">Test Results Dashboard</div>
+      <div class="test-summary-stats">
+        <div class="test-stat">
+          <span class="test-stat-lbl">Total Tests</span>
+          <span class="test-stat-val" id="test-total-count">0</span>
+        </div>
+        <div class="test-stat">
+          <span class="test-stat-lbl" style="color: var(--success);">Passed</span>
+          <span class="test-stat-val" id="test-passed-count" style="color: var(--success);">0</span>
+        </div>
+        <div class="test-stat">
+          <span class="test-stat-lbl" style="color: var(--danger);">Failed</span>
+          <span class="test-stat-val" id="test-failed-count" style="color: var(--danger);">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-results-list" id="test-results-container">
+      <div style="text-align: center; color: var(--text-muted); padding: 2rem;">No test runs executed. Click "Execute Test Suite" to run checks.</div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast-notification">
+    <div class="toast-icon">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+    </div>
+    <div class="toast-text" id="toast-text-content">Remediation applied successfully.</div>
+  </div>
+
+  <script>
+    // ==========================================
+    // MOCK DATABASES & CONFIG
+    // ==========================================
+
+    const API_BASE_URL = window.location.origin;
+    let currentEngineMode = "simulated"; // 'simulated' or 'live'
+
+    const ICD_DB = {
+      "M17.11": "Unilateral primary osteoarthritis, right knee",
+      "L57.0": "Actinic keratosis (Premalignant skin lesion)",
+      "I10": "Essential (primary) hypertension",
+      "Z00.00": "Encounter for general adult medical examination without abnormal findings",
+      "L70.0": "Acne vulgaris",
+      "J30.9": "Allergic rhinitis, unspecified",
+      "R07.9": "Chest pain, unspecified",
+      "I50.9": "Heart failure, unspecified"
+    };
+
+    const SNOMED_DB = {
+      "knee pain": { code: "271801002", label: "Knee pain (finding)", icd: "M17.11" },
+      "pain in knee": { code: "271801002", label: "Knee pain (finding)", icd: "M17.11" },
+      "premalignant lesion": { code: "302292003", label: "Lesion of upper limb skin (finding)", icd: "L57.0" },
+      "lesion": { code: "302292003", label: "Skin lesion (finding)", icd: "L57.0" },
+      "hypertension": { code: "38341003", label: "Hypertensive disorder (disorder)", icd: "I10" },
+      "blood pressure": { code: "38341003", label: "Hypertensive disorder (disorder)", icd: "I10" },
+      "routine follow-up": { code: "185317003", label: "Routine follow-up clinical encounter (procedure)", icd: "Z00.00" },
+      "acne": { code: "3282000", label: "Acne vulgaris (disorder)", icd: "L70.0" },
+      "breakout": { code: "3282000", label: "Acne vulgaris (disorder)", icd: "L70.0" },
+      "allergies": { code: "402630009", label: "Allergic rhinitis (disorder)", icd: "J30.9" },
+      "seasonal allergies": { code: "402630009", label: "Allergic rhinitis (disorder)", icd: "J30.9" },
+      "chest pain": { code: "29857009", label: "Chest pain (finding)", icd: "R07.9" },
+      "dyspnea": { code: "232317003", label: "Dyspnea (finding)", icd: "I50.9" },
+      "shortness of breath": { code: "232317003", label: "Dyspnea (finding)", icd: "I50.9" }
+    };
+
+    const CPT_DB = {
+      "99212": "Office/outpatient visit, established patient, 10 min, straightforward E/M",
+      "99213": "Office/outpatient visit, established patient, 15 min, low complexity E/M",
+      "99214": "Office/outpatient visit, established patient, 25 min, moderate complexity E/M",
+      "99215": "Office/outpatient visit, established patient, 40 min, high complexity E/M",
+      "17000": "Destruction of premalignant lesion, first lesion",
+      "93015": "Cardiovascular stress test using maximal or submaximal exercise",
+      "36415": "Collection of venous blood by venipuncture",
+      "97110": "Therapeutic procedure, 1 or more areas, each 15 minutes (physical therapy)"
+    };
+
+    const CARC_DB = {
+      "CO-45": "Charge exceeds fee schedule/maximum allowable.",
+      "CO-97": "The benefit for this service is included in the payment/allowance for another service/procedure that has already been adjudicated.",
+      "CO-198": "Payment adjusted because the number of services/units billed exceeds the maximum daily limit.",
+      "CO-50": "These are non-covered services because this is not deemed a 'medical necessity' by the payer.",
+      "CO-150": "The code is inconsistent with the clinical documentation or severity of the patient's condition."
+    };
+
+    const RARC_DB = {
+      "M144": "Pre-operative care is included in the payment for the procedure. Separate payment is not allowed.",
+      "N362": "The number of days or units of service has exceeded our maximum allowable.",
+      "N115": "This procedure is not covered when billed with this diagnosis.",
+      "N386": "Procedure code is inconsistent with the severity or documentation."
+    };
+
+    const NCCI_PTP = {
+      "17000_99213": { modifierRequired: "25", allowedBypass: true, description: "CPT 17000 bundles E/M visit CPT 99213 unless separately identifiable Modifier -25 is present" },
+      "17000_99214": { modifierRequired: "25", allowedBypass: true, description: "CPT 17000 bundles E/M visit CPT 99214 unless separately identifiable Modifier -25 is present" },
+      "17000_99215": { modifierRequired: "25", allowedBypass: true, description: "CPT 17000 bundles E/M visit CPT 99215 unless separately identifiable Modifier -25 is present" },
+      "99214_99213": { allowedBypass: false, description: "CPT 99214 and CPT 99213 are mutually exclusive E/M codes billed on the same day. Cannot bill together." }
+    };
+
+    const MUE_LIMITS = {
+      "99212": 1,
+      "99213": 1,
+      "99214": 1,
+      "99215": 1,
+      "17000": 1,
+      "93015": 1,
+      "36415": 1,
+      "97110": 2
+    };
+
+    const MEDICAL_NECESSITY_LCD = {
+      "97110": ["M17.11", "M17.12", "M17.9"],
+      "93015": ["R07.9", "I50.9", "I25.10"],
+      "36415": ["Z00.00", "E11.9", "I10"],
+      "17000": ["L57.0", "D48.5"],
+      "99212": ["*"],
+      "99213": ["*"],
+      "99214": ["*"],
+      "99215": ["*"]
+    };
+
+    const PROVIDER_PATTERNS = {
+      "1023948571": {
+        name: "Dr. John Miller, MD",
+        level5Freq: 74,
+        mod25Freq: 85,
+        risk: "HIGH",
+        reasons: "High upcoding pattern (74% Level 5 office visits) and excessive use of Modifier -25."
+      },
+      "1827364509": {
+        name: "Dr. Sarah Jenkins, MD",
+        level5Freq: 8,
+        mod25Freq: 11,
+        risk: "LOW",
+        reasons: "Billing distribution aligns with peer specialty averages."
+      }
+    };
+
+    const SCENARIOS = {
+      1: {
+        name: "John Miller", dob: "04/12/1968", ssn: "485-99-2810",
+        provider: "Dr. Sarah Jenkins, MD", npi: "1827364509", claimid: "CLM-7782910",
+        soap: `SUBJECTIVE: Patient reports severe right knee pain, worse with walking. Denies trauma.
+OBJECTIVE: Mild effusion in right knee, range of motion slightly limited (110 degrees). McMurray test negative.
+ASSESSMENT: Primary osteoarthritis of the right knee (ICD-10: M17.11).
+PLAN: Referred for physical therapy (CPT: 97110), 1 unit. Scheduled follow-up in 4 weeks.`,
+        lines: [
+          { cpt: "97110", icd: "M17.11", units: 1, modifier: "", charge: 120 }
+        ]
+      },
+      2: {
+        name: "Alice Smith", dob: "11/23/1982", ssn: "182-99-4059",
+        provider: "Dr. John Miller, MD", npi: "1023948571", claimid: "CLM-3382901",
+        soap: `SUBJECTIVE: Patient presents for treatment of a premalignant lesion on the left arm. She also wishes to discuss her hypertension management.
+OBJECTIVE: Lesion on left forearm measuring 0.8cm, treated with liquid nitrogen. Blood pressure measured at 138/84.
+ASSESSMENT: Actinic keratosis (ICD-10: L57.0), Essential hypertension (ICD-10: I10).
+PLAN: Destruction of premalignant lesion (CPT: 17000). Reviewed BP readings, counselled patient on low-sodium diet, E/M separate evaluation performed.`,
+        lines: [
+          { cpt: "17000", icd: "L57.0", units: 1, modifier: "", charge: 180 },
+          { cpt: "99213", icd: "I10", units: 1, modifier: "", charge: 150 }
+        ]
+      },
+      3: {
+        name: "Robert Davis", dob: "09/05/1954", ssn: "384-99-1029",
+        provider: "Dr. Sarah Jenkins, MD", npi: "1827364509", claimid: "CLM-5591029",
+        soap: `SUBJECTIVE: Patient comes in for standard outpatient blood draw.
+OBJECTIVE: Single venipuncture performed successfully on left antecubital fossa.
+ASSESSMENT: Routine lab work follow-up (ICD-10: Z00.00).
+PLAN: Collected venous blood specimen.`,
+        lines: [
+          { cpt: "36415", icd: "Z00.00", units: 3, modifier: "", charge: 75 }
+        ]
+      },
+      4: {
+        name: "Emily Johnson", dob: "07/19/1995", ssn: "294-99-9238",
+        provider: "Dr. John Miller, MD", npi: "1023948571", claimid: "CLM-9940182",
+        soap: `SUBJECTIVE: Patient presents with worsening facial acne breakouts.
+OBJECTIVE: Multiple papules and pustules on cheeks and forehead. No systemic symptoms.
+ASSESSMENT: Acne vulgaris (ICD-10: L70.0).
+PLAN: Prescribed topical clindamycin.`,
+        lines: [
+          { cpt: "93015", icd: "L70.0", units: 1, modifier: "", charge: 450 },
+          { cpt: "99213", icd: "L70.0", units: 1, modifier: "", charge: 150 }
+        ]
+      },
+      5: {
+        name: "Michael Brown", dob: "01/30/1960", ssn: "948-99-3849",
+        provider: "Dr. John Miller, MD", npi: "1023948571", claimid: "CLM-6629103",
+        soap: `SUBJECTIVE: Patient presents with mild seasonal allergies and requests a prescription refill.
+OBJECTIVE: Clear lungs, normal nasal mucosa. Normal vitals. Very quick 10-minute encounter, low complexity.
+ASSESSMENT: Allergic rhinitis, unspecified (ICD-10: J30.9).
+PLAN: Refilled cetirizine.`,
+        lines: [
+          { cpt: "99215", icd: "J30.9", units: 1, modifier: "", charge: 350 }
+        ]
+      }
+    };
+
+    // ==========================================
+    // STATE VARIABLES
+    // ==========================================
+
+    let activeScenarioId = 1;
+    let activeClaimLines = [];
+    let iamMappings = {}; 
+    let currentCaseReference = "";
+    let currentPseudoPatient = "";
+    let isPipelineRunning = false;
+    let currentHitlSessionId = null;
+    let currentHitlInterruptId = null;
+
+    // ==========================================
+    // INITIALIZATION & DUAL-MODE TOGGLE
+    // ==========================================
+
+    window.onload = function() {
+      loadScenario(1);
+      checkLiveServerHealth();
+    };
+
+    function switchEngineMode(mode) {
+      currentEngineMode = mode;
+      addLog(`Agent Engine switched to: ${mode === 'live' ? 'Live FastAPI Rest APIs' : 'Local Browser Simulation'}`, "warning");
+      
+      const badge = document.getElementById('connection-status');
+      const text = document.getElementById('connection-text');
+      
+      if (mode === "live") {
+        checkLiveServerHealth();
+      } else {
+        badge.className = "badge-status";
+        text.innerText = "Local Simulation Active";
+      }
+    }
+
+    async function checkLiveServerHealth() {
+      if (currentEngineMode !== "live") return;
+      const badge = document.getElementById('connection-status');
+      const text = document.getElementById('connection-text');
+      
+      try {
+        const res = await fetch(`${API_BASE_URL}/openapi.json`, { method: 'GET' });
+        if (res.ok) {
+          badge.className = "badge-status";
+          text.innerText = "FastAPI Backend: Connected";
+        } else {
+          throw new Error();
+        }
+      } catch (err) {
+        badge.className = "badge-status disconnected";
+        text.innerText = "FastAPI Backend: Disconnected";
+        addLog("Warning: Could not connect to FastAPI server at " + API_BASE_URL, "danger");
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.dashboard-container, .single-column-container').forEach(c => c.classList.remove('active'));
+      
+      if (tabId === 'dashboard') {
+        document.querySelector("button[onclick=\"switchTab('dashboard')\"]").classList.add('active');
+        document.getElementById('tab-dashboard').classList.add('active');
+      } else {
+        document.querySelector("button[onclick=\"switchTab('tests')\"]").classList.add('active');
+        document.getElementById('tab-tests').classList.add('active');
+        runUnitTests(); 
+      }
+    }
+
+    function addLog(message, type = 'info') {
+      const consoleBox = document.getElementById('console-logs');
+      const timeStr = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.innerHTML = `<span class="console-time">${timeStr}</span><span class="console-tag ${type}">${type}</span>${message}`;
+      consoleBox.appendChild(line);
+      consoleBox.scrollTop = consoleBox.scrollHeight;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-text-content').innerText = message;
+      toast.classList.add('active');
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 3000);
+    }
+
+    // ==========================================
+    // UI BUILDERS
+    // ==========================================
+
+    function loadScenario(id) {
+      if (isPipelineRunning) return;
+      activeScenarioId = id;
+      
+      document.querySelectorAll('.preset-card').forEach((c, idx) => {
+        c.classList.toggle('active', (idx + 1) === id);
+      });
+
+      const sc = SCENARIOS[id];
+      document.getElementById('intake-name').value = sc.name;
+      document.getElementById('intake-dob').value = sc.dob;
+      document.getElementById('intake-ssn').value = sc.ssn;
+      document.getElementById('intake-provider').value = sc.provider;
+      document.getElementById('intake-npi').value = sc.npi;
+      document.getElementById('intake-claimid').value = sc.claimid;
+      document.getElementById('intake-soap').value = sc.soap;
+
+      activeClaimLines = JSON.parse(JSON.stringify(sc.lines));
+      renderBilledCodesForm();
+      
+      resetStepper();
+      document.getElementById('deid-pseudoid').innerText = 'PP-XXXX-X';
+      document.getElementById('deid-caseid').innerText = 'REF-XXXX-XX';
+      document.getElementById('deid-piistatus').innerText = 'Inactive';
+      document.getElementById('deid-piistatus').className = 'deid-val';
+      
+      document.getElementById('decision-status-text').innerText = 'No Claim Processed';
+      document.getElementById('decision-meta').innerText = 'Select a scenario and run the validation pipeline.';
+      document.getElementById('decision-badge-container').innerHTML = '';
+      document.getElementById('financial-billed').innerText = '$0.00';
+      document.getElementById('financial-paid').innerText = '$0.00';
+      document.getElementById('financial-patient').innerText = '$0.00';
+      document.getElementById('claim-results-table').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No adjudicated data.</td></tr>`;
+      document.getElementById('remediation-panel').style.display = 'none';
+
+      updateProviderChart(0, 0, 0, 0);
+      document.getElementById('provider-pattern-info').innerText = 'No provider audited.';
+      document.getElementById('metric-level5').innerText = '--';
+      document.getElementById('metric-mod25').innerText = '--';
+      document.getElementById('metric-level5').className = 'metric-val';
+      document.getElementById('metric-mod25').className = 'metric-val';
+
+      addLog(`Preset case ${id} loaded: "${sc.name}" claim for ${sc.provider}.`, 'info');
+    }
+
+    function renderBilledCodesForm() {
+      const container = document.getElementById('code-entries-container');
+      container.innerHTML = '';
+      
+      activeClaimLines.forEach((line, idx) => {
+        const row = document.createElement('div');
+        row.className = 'code-entry-row';
+        row.innerHTML = `
+          <input type="text" class="form-control" style="font-family: var(--font-mono);" value="${line.cpt}" onchange="updateLineField(${idx}, 'cpt', this.value)">
+          <input type="text" class="form-control" style="font-family: var(--font-mono);" value="${line.icd}" onchange="updateLineField(${idx}, 'icd', this.value)">
+          <input type="number" class="form-control" style="font-family: var(--font-mono);" value="${line.units}" onchange="updateLineField(${idx}, 'units', parseInt(this.value)||1)">
+          <input type="text" class="form-control" style="font-family: var(--font-mono);" value="${line.modifier}" onchange="updateLineField(${idx}, 'modifier', this.value)">
+          <input type="number" class="form-control" style="font-family: var(--font-mono);" value="${line.charge}" onchange="updateLineField(${idx}, 'charge', parseFloat(this.value)||0)">
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function updateLineField(index, field, val) {
+      activeClaimLines[index][field] = val;
+    }
+
+    function resetStepper() {
+      for (let i = 0; i < 8; i++) {
+        const el = document.getElementById(`step-${i}`);
+        el.className = 'step-node pending';
+        el.querySelector('.step-status-text').innerText = 'Pending';
+      }
+    }
+
+    function updateProviderChart(p5, peer5, p25, peer25) {
+      document.getElementById('chart-bar-1').style.height = `${p5}%`;
+      document.getElementById('chart-bar-2').style.height = `${peer5}%`;
+      document.getElementById('chart-bar-3').style.height = `${p25}%`;
+      document.getElementById('chart-bar-4').style.height = `${peer25}%`;
+    }
+
+    // ==========================================
+    // PRIVACY & OBFUSCATION UTILITIES
+    // ==========================================
+
+    function generateSecureIDs(patientName, claimId) {
+      const pseudoId = 'PP-' + hashCode(patientName).toString().substring(1, 5) + '-U';
+      const caseId = 'REF-' + hashCode(claimId).toString().substring(1, 5) + '-AC';
+      return { pseudoId, caseId };
+    }
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash);
+    }
+
+    function obfuscatePII(text, name, dob, ssn) {
+      let cleaned = text;
+      const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      
+      if (name) {
+        const nameParts = name.split(' ');
+        nameParts.forEach(part => {
+          if (part.length > 2) {
+            const regex = new RegExp('\\b' + escapeRegExp(part) + '\\b', 'gi');
+            cleaned = cleaned.replace(regex, '[REDACTED_PATIENT_NAME]');
+          }
+        });
+      }
+      if (dob) {
+        cleaned = cleaned.replace(new RegExp(escapeRegExp(dob), 'g'), '[REDACTED_PATIENT_DOB]');
+      }
+      if (ssn) {
+        cleaned = cleaned.replace(new RegExp(escapeRegExp(ssn), 'g'), '[REDACTED_PATIENT_SSN]');
+      }
+      
+      cleaned = cleaned.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[REDACTED_SSN]');
+      cleaned = cleaned.replace(/\b\d{3}-\d{3}-\d{4}\b/g, '[REDACTED_PHONE]');
+      cleaned = cleaned.replace(/\b\(\d{3}\)\s*\d{3}-\d{4}\b/g, '[REDACTED_PHONE]');
+      cleaned = cleaned.replace(/\b\d{2}\/\d{2}\/\d{4}\b/g, '[REDACTED_DATE]');
+      
+      return cleaned;
+    }
+
+    // ==========================================
+    // PIPELINE EXECUTION ENGINE (SIMULATION vs LIVE)
+    // ==========================================
+
+    async function runPipeline() {
+      if (isPipelineRunning) return;
+      isPipelineRunning = true;
+      resetStepper();
+      addLog(`Starting pipeline [Engine: ${currentEngineMode.toUpperCase()}]...`, "info");
+
+      // Extract Input details
+      const rawName = document.getElementById('intake-name').value;
+      const rawDob = document.getElementById('intake-dob').value;
+      const rawSsn = document.getElementById('intake-ssn').value;
+      const rawProvider = document.getElementById('intake-provider').value;
+      const rawNpi = document.getElementById('intake-npi').value;
+      const rawClaimId = document.getElementById('intake-claimid').value;
+      const rawSoap = document.getElementById('intake-soap').value;
+
+      if (currentEngineMode === "live") {
+        // Run API Endpoint call to FastAPI Backend
+        try {
+          addLog("Transmitting REST API payload to FastAPI server /api/v1/adjudicate...", "info");
+          
+          const payload = {
+            patient_name: rawName,
+            dob: rawDob,
+            ssn: rawSsn,
+            provider_name: rawProvider,
+            provider_npi: rawNpi,
+            claim_id: rawClaimId,
+            soap_note: rawSoap,
+            lines: activeClaimLines
+          };
+
+          const response = await fetch(`${API_BASE_URL}/api/v1/adjudicate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server returned status ${response.status}`);
+          }
+
+          const apiResult = await response.json();
+          addLog("FastAPI response received. Adjudicated case successfully.", "success");
+
+          // Execute visual pipeline step-by-step UI transition
+          runVisualStepper(apiResult, rawName, rawDob, rawSsn, rawSoap, rawProvider, rawNpi, rawClaimId);
+
+        } catch (err) {
+          addLog(`Live API Error: ${err.message}. Defaulting back to Local Simulation mode.`, "danger");
+          currentEngineMode = "simulated";
+          document.getElementById('engine-mode').value = "simulated";
+          isPipelineRunning = false;
+          runPipeline(); // fallback
+        }
+      } else {
+        // Run Local Browser Simulation
+        runSimulationEngine(rawName, rawDob, rawSsn, rawSoap, rawProvider, rawNpi, rawClaimId);
+      }
+    }
+
+    // Runs visual UI steps transitions using real backend data output
+    function runVisualStepper(apiResult, rawName, rawDob, rawSsn, rawSoap, rawProvider, rawNpi, rawClaimId) {
+      let step = 0;
+      const totalSteps = 8;
+      
+      const interval = setInterval(async () => {
+        if (step > 0) {
+          const prevEl = document.getElementById(`step-${step - 1}`);
+          // Check step violations to color code step transitions (Flagged vs Completed)
+          let hasViolation = false;
+          if (step - 1 === 2 && apiResult.lines.some(l => l.status === "DENIED" && (l.carc === "CO-150" && l.rarc === "N386"))) hasViolation = true;
+          if (step - 1 === 3 && apiResult.lines.some(l => l.carc === "CO-97")) hasViolation = true;
+          if (step - 1 === 4 && apiResult.lines.some(l => l.carc === "CO-198")) hasViolation = true;
+          if (step - 1 === 5 && apiResult.lines.some(l => l.carc === "CO-50")) hasViolation = true;
+          if (step - 1 === 6 && PROVIDER_PATTERNS[rawNpi] && PROVIDER_PATTERNS[rawNpi].risk === "HIGH") hasViolation = true;
+
+          prevEl.className = `step-node ${hasViolation ? 'flagged' : 'completed'}`;
+          prevEl.querySelector('.step-status-text').innerText = hasViolation ? 'FLAGGED' : 'SUCCESS';
+        }
+
+        if (step < totalSteps) {
+          const curEl = document.getElementById(`step-${step}`);
+          curEl.className = 'step-node active';
+          curEl.querySelector('.step-status-text').innerText = 'RUNNING';
+        }
+
+        // Output matching log traces in visual terminal
+        switch (step) {
+          case 0:
+            currentPseudoPatient = apiResult.pseudo_patient_id;
+            currentCaseReference = apiResult.case_reference_id;
+            document.getElementById('deid-pseudoid').innerHTML = `<span class="redacted-value">${currentPseudoPatient}</span>`;
+            document.getElementById('deid-caseid').innerHTML = `<span class="redacted-value">${currentCaseReference}</span>`;
+            document.getElementById('deid-piistatus').innerHTML = `<span class="redacted-value">SECURE / REDACTED</span>`;
+            document.getElementById('deid-piistatus').className = 'deid-val';
+            addLog(`De-ID complete. Patient mapped to PseudoID: ${currentPseudoPatient}, Case: ${currentCaseReference}`, "success");
+            break;
+          case 1:
+            apiResult.lines.forEach(l => {
+              if (l.snomed !== "Not Detected") {
+                addLog(`Detected clinical symptom -> mapped to SNOMED CT: ${l.snomed}`, "success");
+              }
+            });
+            break;
+          case 2:
+            addLog("Validating code identifiers against payer references...", "info");
+            break;
+          case 3:
+            addLog("Checking Procedure-to-Procedure (PTP) edits under NCCI...", "info");
+            break;
+          case 4:
+            addLog("Checking Medically Unlikely Edit (MUE) daily unit caps...", "info");
+            break;
+          case 5:
+            addLog("Checking Medical Necessity LCD coverage policies...", "info");
+            break;
+          case 6:
+            const pattern = PROVIDER_PATTERNS[rawNpi];
+            if (pattern) {
+              addLog(`Provider Audited. Risk Level: ${pattern.risk}. ${pattern.reasons}`, pattern.risk === 'HIGH' ? 'warning' : 'success');
+              document.getElementById('provider-pattern-info').innerText = `${pattern.name} (NPI: ${rawNpi}) - Risk: ${pattern.risk}. ${pattern.reasons}`;
+              document.getElementById('metric-level5').innerText = `${pattern.level5Freq}%`;
+              document.getElementById('metric-mod25').innerText = `${pattern.mod25Freq}%`;
+              document.getElementById('metric-level5').className = 'metric-val ' + (pattern.risk === 'HIGH' ? 'high-risk' : 'low-risk');
+              document.getElementById('metric-mod25').className = 'metric-val ' + (pattern.risk === 'HIGH' ? 'high-risk' : 'low-risk');
+              if (pattern.risk === "HIGH") {
+                updateProviderChart(pattern.level5Freq, 14, pattern.mod25Freq, 19);
+              } else {
+                updateProviderChart(pattern.level5Freq, 8, pattern.mod25Freq, 12);
+              }
+            }
+            break;
+          case 7:
+            renderAdjudicationResults(apiResult);
+            isPipelineRunning = false;
+            clearInterval(interval);
+            addLog("Live API Claim Audit Completed.", "success");
+            break;
+        }
+        step++;
+      }, 700);
+    }
+
+    function runSimulationEngine(rawName, rawDob, rawSsn, rawSoap, rawProvider, rawNpi, rawClaimId) {
+      let step = 0;
+      const totalSteps = 8;
+      
+      let codeValidations = [];
+      let ncciEdits = [];
+      let mueEdits = [];
+      let medicalNecessityEdits = [];
+      let providerPatternResult = {};
+      let extractedSymptoms = [];
+      let finalDecision = {};
+
+      const interval = setInterval(async () => {
+        if (step > 0) {
+          const prevEl = document.getElementById(`step-${step - 1}`);
+          const hasViolation = checkStepIssues(step - 1, { codeValidations, ncciEdits, mueEdits, medicalNecessityEdits, providerPatternResult });
+          prevEl.className = `step-node ${hasViolation ? 'flagged' : 'completed'}`;
+          prevEl.querySelector('.step-status-text').innerText = hasViolation ? 'FLAGGED' : 'SUCCESS';
+        }
+
+        if (step < totalSteps) {
+          const curEl = document.getElementById(`step-${step}`);
+          curEl.className = 'step-node active';
+          curEl.querySelector('.step-status-text').innerText = 'RUNNING';
+        }
+
+        switch (step) {
+          case 0:
+            const secureData = generateSecureIDs(rawName, rawClaimId);
+            currentPseudoPatient = secureData.pseudoId;
+            currentCaseReference = secureData.caseId;
+            
+            document.getElementById('deid-pseudoid').innerHTML = `<span class="redacted-value">${currentPseudoPatient}</span>`;
+            document.getElementById('deid-caseid').innerHTML = `<span class="redacted-value">${currentCaseReference}</span>`;
+            document.getElementById('deid-piistatus').innerHTML = `<span class="redacted-value">SECURE / REDACTED</span>`;
+            document.getElementById('deid-piistatus').className = 'deid-val';
+            addLog(`De-ID complete. Patient mapped to PseudoID: ${currentPseudoPatient}, Case: ${currentCaseReference}`, "success");
+            break;
+
+          case 1:
+            addLog("Parsing SOAP note for clinical symptoms...", "info");
+            const lowerSoap = rawSoap.toLowerCase();
+            Object.keys(SNOMED_DB).forEach(key => {
+              if (lowerSoap.includes(key)) {
+                const sympt = SNOMED_DB[key];
+                if (!extractedSymptoms.some(s => s.code === sympt.code)) {
+                  extractedSymptoms.push({ term: key, code: sympt.code, label: sympt.label, icd: sympt.icd });
+                  addLog(`Mapped clinical term "${key}" -> SNOMED CT: ${sympt.code} (${sympt.label})`, "success");
+                }
+              }
+            });
+            break;
+
+          case 2:
+            addLog("Validating CPT and ICD-10 identifiers...", "info");
+            activeClaimLines.forEach((line, index) => {
+              const cptValid = CPT_DB[line.cpt] !== undefined;
+              const icdValid = ICD_DB[line.icd] !== undefined;
+              codeValidations.push({ line: index + 1, cpt: line.cpt, icd: line.icd, validCpt: cptValid, validIcd: icdValid });
+              if (cptValid && icdValid) {
+                addLog(`Line ${index+1}: CPT ${line.cpt} & ICD-10 ${line.icd} are valid.`, "success");
+              } else {
+                addLog(`Line ${index+1}: Code error - CPT valid: ${cptValid}, ICD valid: ${icdValid}`, "danger");
+              }
+            });
+            break;
+
+          case 3:
+            addLog("Auditing Procedure-to-Procedure (PTP) NCCI bundles...", "info");
+            activeClaimLines.forEach((line, idx) => {
+              activeClaimLines.forEach((otherLine, otherIdx) => {
+                if (idx === otherIdx) return;
+                const pair = `${line.cpt}_${otherLine.cpt}`;
+                if (NCCI_PTP[pair]) {
+                  const rule = NCCI_PTP[pair];
+                  const hasBypass = rule.modifierRequired === "25" && otherLine.modifier === "25";
+                  if (hasBypass) {
+                    addLog(`NCCI Edit bypassed for pair ${pair} via Modifier -25.`, "success");
+                  } else {
+                    ncciEdits.push({ line: otherIdx + 1, cpt: otherLine.cpt, parentCpt: line.cpt, bypassable: rule.allowedBypass });
+                    addLog(`NCCI Edit Triggered: CPT ${otherLine.cpt} is bundled into CPT ${line.cpt}. Bypassable: ${rule.allowedBypass}`, "danger");
+                  }
+                }
+              });
+            });
+            break;
+
+          case 4:
+            addLog("Validating Medically Unlikely Edits (MUE)...", "info");
+            activeClaimLines.forEach((line, idx) => {
+              const maxLimit = MUE_LIMITS[line.cpt];
+              if (maxLimit && line.units > maxLimit) {
+                mueEdits.push({ line: idx + 1, cpt: line.cpt, units: line.units, maxLimit });
+                addLog(`MUE Triggered: CPT ${line.cpt} units (${line.units}) exceed daily cap of ${maxLimit}.`, "danger");
+              } else {
+                addLog(`CPT ${line.cpt} units (${line.units}) within allowed limits.`, "success");
+              }
+            });
+            break;
+
+          case 5:
+            addLog("Verifying Local Coverage Determinations (LCD) medical necessity...", "info");
+            activeClaimLines.forEach((line, idx) => {
+              const allowedIcds = MEDICAL_NECESSITY_LCD[line.cpt];
+              if (allowedIcds) {
+                const passes = allowedIcds.includes("*") || allowedIcds.includes(line.icd);
+                if (passes) {
+                  addLog(`Medical necessity verified for CPT ${line.cpt} with ICD-10 ${line.icd}.`, "success");
+                } else {
+                  medicalNecessityEdits.push({ line: idx + 1, cpt: line.cpt, icd: line.icd });
+                  addLog(`LCD Violation: CPT ${line.cpt} lacks medical necessity for diagnosis ${line.icd}.`, "danger");
+                }
+              }
+            });
+            break;
+
+          case 6:
+            addLog(`Auditing Provider billing pattern for NPI ${rawNpi}...`, "info");
+            const pattern = PROVIDER_PATTERNS[rawNpi];
+            if (pattern) {
+              providerPatternResult = pattern;
+              addLog(`Provider Audited. Risk Level: ${pattern.risk}. ${pattern.reasons}`, pattern.risk === 'HIGH' ? 'warning' : 'success');
+              
+              document.getElementById('provider-pattern-info').innerText = `${pattern.name} (NPI: ${rawNpi}) - Risk: ${pattern.risk}. ${pattern.reasons}`;
+              document.getElementById('metric-level5').innerText = `${pattern.level5Freq}%`;
+              document.getElementById('metric-mod25').innerText = `${pattern.mod25Freq}%`;
+              document.getElementById('metric-level5').className = 'metric-val ' + (pattern.risk === 'HIGH' ? 'high-risk' : 'low-risk');
+              document.getElementById('metric-mod25').className = 'metric-val ' + (pattern.risk === 'HIGH' ? 'high-risk' : 'low-risk');
+              
+              if (pattern.risk === "HIGH") {
+                updateProviderChart(pattern.level5Freq, 14, pattern.mod25Freq, 19);
+              } else {
+                updateProviderChart(pattern.level5Freq, 8, pattern.mod25Freq, 12);
+              }
+            }
+            break;
+
+          case 7:
+            finalDecision = adjudicateClaim(activeClaimLines, { codeValidations, ncciEdits, mueEdits, medicalNecessityEdits, providerPatternResult, extractedSymptoms });
+            renderAdjudicationResults(finalDecision);
+            isPipelineRunning = false;
+            clearInterval(interval);
+            addLog("Local Simulation Adjudication Completed.", "success");
+            break;
+        }
+        step++;
+      }, 700);
+    }
+
+    function checkStepIssues(stepIndex, data) {
+      if (stepIndex === 2) return data.codeValidations.some(v => !v.validCpt || !v.validIcd);
+      if (stepIndex === 3) return data.ncciEdits.length > 0;
+      if (stepIndex === 4) return data.mueEdits.length > 0;
+      if (stepIndex === 5) return data.medicalNecessityEdits.length > 0;
+      if (stepIndex === 6) return data.providerPatternResult.risk === "HIGH";
+      return false;
+    }
+
+    // ==========================================
+    // ADJUDICATION & REMEDIATION LOGIC (MOCK)
+    // ==========================================
+
+    function adjudicateClaim(lines, validationData) {
+      let totalBilled = 0;
+      let totalPaid = 0;
+      let totalPatient = 0;
+      const results = [];
+      let decisionStatus = "PAID";
+      let remediationText = "";
+
+      lines.forEach((line, index) => {
+        totalBilled += line.charge;
+        let lineStatus = "PAID";
+        let linePaid = line.charge;
+        let linePatient = 0;
+        let assignedCarc = "";
+        let assignedRarc = "";
+
+        let matchingSnomed = "Not Detected";
+        const matchedSymptom = validationData.extractedSymptoms.find(s => s.icd === line.icd);
+        if (matchedSymptom) {
+          matchingSnomed = `${matchedSymptom.code} (${matchedSymptom.term})`;
+        }
+
+        const codeValid = validationData.codeValidations.find(v => v.line === (index + 1));
+        if (codeValid && (!codeValid.validCpt || !codeValid.validIcd)) {
+          lineStatus = "DENIED";
+          linePaid = 0;
+          assignedCarc = "CO-150";
+          assignedRarc = "N386";
+        }
+        
+        const necessityFail = validationData.medicalNecessityEdits.find(e => e.line === (index + 1));
+        if (necessityFail && lineStatus !== "DENIED") {
+          lineStatus = "DENIED";
+          linePaid = 0;
+          assignedCarc = "CO-50";
+          assignedRarc = "N115";
+          decisionStatus = "DENIED";
+          remediationText += `Remove CPT ${line.cpt} because it lacks medical necessity for diagnosis ${line.icd}. `;
+        }
+
+        const ncciFail = validationData.ncciEdits.find(e => e.line === (index + 1));
+        if (ncciFail && lineStatus !== "DENIED") {
+          lineStatus = "DENIED";
+          linePaid = 0;
+          assignedCarc = "CO-97";
+          assignedRarc = "M144";
+          if (decisionStatus !== "DENIED") decisionStatus = "ADJUSTED";
+          if (ncciFail.bypassable) {
+            remediationText += `Add Modifier -25 to CPT ${line.cpt} as documentation supports E/M service. `;
+          }
+        }
+
+        const mueFail = validationData.mueEdits.find(e => e.line === (index + 1));
+        if (mueFail && lineStatus !== "DENIED") {
+          lineStatus = "ADJUSTED";
+          const singleUnitCharge = line.charge / line.units;
+          linePaid = singleUnitCharge * mueFail.maxLimit;
+          assignedCarc = "CO-198";
+          assignedRarc = "N362";
+          if (decisionStatus !== "DENIED") decisionStatus = "ADJUSTED";
+          remediationText += `Reduce billed units for CPT ${line.cpt} from ${line.units} to ${mueFail.maxLimit} to meet daily caps. `;
+        }
+
+        if (line.cpt === "99215" && validationData.providerPatternResult.risk === "HIGH" && lineStatus === "PAID") {
+          lineStatus = "ADJUSTED";
+          linePaid = 120.00; 
+          assignedCarc = "CO-150";
+          assignedRarc = "N386";
+          if (decisionStatus !== "DENIED") decisionStatus = "ADJUSTED";
+          remediationText += `Downcode CPT 99215 to CPT 99212 based on low clinical encounter complexity. `;
+        }
+
+        if (lineStatus === "PAID" || lineStatus === "ADJUSTED") {
+          linePatient = parseFloat((linePaid * 0.20).toFixed(2));
+          linePaid = parseFloat((linePaid * 0.80).toFixed(2));
+        }
+
+        totalPaid += linePaid;
+        totalPatient += linePatient;
+
+        results.push({
+          line: index + 1,
+          code: line.cpt,
+          desc: CPT_DB[line.cpt] || "Unknown Code",
+          snomed: matchingSnomed,
+          units: line.units,
+          carc: assignedCarc,
+          rarc: assignedRarc,
+          status: lineStatus,
+          paid: linePaid,
+          charge: line.charge
+        });
+      });
+
+      return {
+        status: decisionStatus,
+        totalBilled,
+        totalPaid,
+        totalPatient,
+        lines: results,
+        remediation: remediationText || "No corrections required. The claim matches clinical documentation.",
+        draft_communication: `Dear Provider,\n\nWe have completed the clinical audit of claim ${currentCaseReference}. Adjudication Outcome: ${decisionStatus}.\n\nRemediation Actions: ${remediationText || 'No actions required.'}\n\nThank you,\nShieldGuard Payer Claims team`,
+        compliance_report: {
+          case_summary: {
+            case_reference_id: currentCaseReference,
+            pseudo_patient_id: currentPseudoPatient,
+            status: decisionStatus,
+            total_billed: totalBilled,
+            total_paid: totalPaid,
+            total_patient: totalPatient
+          },
+          sop_compliance: "COMPLIANT",
+          human_review_reason: "None",
+          data_redaction_status: "SECURE",
+          explainability_trail: {
+            remediation_suggested: remediationText || "None"
+          },
+          final_decision: decisionStatus
+        }
+      };
+    }
+
+    async function resolveHITL(action) {
+      if (!currentHitlSessionId || !currentHitlInterruptId) return;
+      addLog(`Sending Analyst decision: ${action} to FastAPI server...`, "info");
+      
+      try {
+        const payload = {
+          session_id: currentHitlSessionId,
+          interrupt_id: currentHitlInterruptId,
+          action: action
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/v1/human-review/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server returned status ${response.status}`);
+        }
+        
+        const apiResult = await response.json();
+        addLog(`HITL workflow resolved. Claim finalized as: ${apiResult.status}.`, "success");
+        
+        // Re-render adjudication results with final outcome!
+        renderAdjudicationResults(apiResult);
+        
+        // Clean up HITL variables
+        currentHitlSessionId = null;
+        currentHitlInterruptId = null;
+        
+      } catch (err) {
+        addLog(`HITL action error: ${err.message}`, "danger");
+      }
+    }
+
+    function renderAdjudicationResults(decision) {
+      const card = document.getElementById('decision-card-element');
+      const statusText = document.getElementById('decision-status-text');
+      const statusMeta = document.getElementById('decision-meta');
+      const badgeBox = document.getElementById('decision-badge-container');
+
+      if (decision.status === "NEEDS_REVIEW") {
+        card.className = "panel decision-card adjusted";
+        statusText.innerText = "Claim Pending Review";
+        statusText.className = "decision-status warning";
+        statusMeta.innerText = `Case Reference ID: ${currentCaseReference} requires human analyst override.`;
+        badgeBox.innerHTML = `<span class="badge-result adjusted">NEEDS REVIEW</span>`;
+        
+        // Hide compliance and show HITL
+        document.getElementById('compliance-communication-panel').style.display = 'none';
+        document.getElementById('hitl-analyst-panel').style.display = 'block';
+        document.getElementById('hitl-description').innerText = `Claim contains denied procedures or provider flagged for high audit risk. Session: ${decision.hitl_session_id}`;
+        
+        currentHitlSessionId = decision.hitl_session_id;
+        currentHitlInterruptId = decision.hitl_interrupt_id;
+      } else {
+        // Hide HITL
+        document.getElementById('hitl-analyst-panel').style.display = 'none';
+        
+        card.className = "panel decision-card " + decision.status.toLowerCase();
+        statusText.innerText = decision.status === "PAID" ? "Claim Approved & Paid" : (decision.status === "ADJUSTED" ? "Claim Adjusted" : "Claim Denied");
+        statusText.className = "decision-status " + decision.status.toLowerCase();
+        statusMeta.innerText = `Case Reference ID: ${currentCaseReference} adjudicated.`;
+        badgeBox.innerHTML = `<span class="badge-result ${decision.status.toLowerCase()}">${decision.status}</span>`;
+        
+        // Show compliance and communication panels if present!
+        if (decision.draft_communication) {
+          document.getElementById('compliance-communication-panel').style.display = 'block';
+          document.getElementById('compliance-communication-text').innerText = decision.draft_communication;
+          document.getElementById('compliance-report-json').innerText = JSON.stringify(decision.compliance_report, null, 2);
+        } else {
+          document.getElementById('compliance-communication-panel').style.display = 'none';
+        }
+      }
+
+      document.getElementById('financial-billed').innerText = `$${decision.totalBilled.toFixed(2)}`;
+      document.getElementById('financial-paid').innerText = `$${decision.totalPaid.toFixed(2)}`;
+      document.getElementById('financial-patient').innerText = `$${decision.totalPatient.toFixed(2)}`;
+
+      const tbody = document.getElementById('claim-results-table');
+      tbody.innerHTML = '';
+
+      decision.lines.forEach(line => {
+        const tr = document.createElement('tr');
+        const badgeClass = line.status.toLowerCase();
+        
+        let carcText = "--";
+        if (line.carc) {
+          carcText = `<strong title="${CARC_DB[line.carc] || 'Description'}">${line.carc}</strong>`;
+          if (line.rarc) {
+            carcText += ` / <span title="${RARC_DB[line.rarc] || 'Description'}">${line.rarc}</span>`;
+          }
+        }
+
+        let snomedCell = line.snomed;
+        if (line.snomed !== "Not Detected") {
+          const parts = line.snomed.split(' ');
+          snomedCell = `<span class="snomed-pill">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
+            ${parts[0]}
+          </span>`;
+        }
+
+        tr.innerHTML = `
+          <td>${line.line}</td>
+          <td><strong>${line.code}</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">${line.desc}</span></td>
+          <td>${snomedCell}</td>
+          <td>${line.units}</td>
+          <td>${carcText}</td>
+          <td><span class="badge-result ${badgeClass}">${line.status}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const remBox = document.getElementById('remediation-panel');
+      const remDesc = document.getElementById('remediation-description');
+      const applyBtn = document.getElementById('btn-apply-remediation');
+
+      if (decision.status !== "PAID") {
+        remBox.style.display = 'block';
+        remDesc.innerText = decision.remediation;
+        if (decision.remediation.includes("Remove")) {
+          applyBtn.innerText = "Apply Edits (Remove Code)";
+        } else if (decision.remediation.includes("Add Modifier")) {
+          applyBtn.innerText = "Apply Edits (Add Modifier -25)";
+        } else if (decision.remediation.includes("Reduce billed units")) {
+          applyBtn.innerText = "Apply Edits (Correct Units)";
+        } else if (decision.remediation.includes("Downcode")) {
+          applyBtn.innerText = "Apply Edits (Downcode CPT)";
+        }
+      } else {
+        remBox.style.display = 'none';
+      }
+    }
+
+    function applyRemediation() {
+      addLog("Applying remediation edits to billed claim lines...", "info");
+      
+      if (activeScenarioId === 2) {
+        activeClaimLines[1].modifier = "25";
+        showToast("Modifier -25 appended to CPT 99213.");
+      } else if (activeScenarioId === 3) {
+        activeClaimLines[0].units = 1;
+        activeClaimLines[0].charge = 25;
+        showToast("Billed units reduced to 1 for CPT 36415.");
+      } else if (activeScenarioId === 4) {
+        activeClaimLines = activeClaimLines.filter(l => l.cpt !== "93015");
+        showToast("Non-covered code CPT 93015 removed from claim.");
+      } else if (activeScenarioId === 5) {
+        activeClaimLines[0].cpt = "99212";
+        activeClaimLines[0].charge = 120;
+        showToast("CPT 99215 downcoded to Level 2 E/M 99212.");
+      }
+
+      renderBilledCodesForm();
+      runPipeline(); 
+    }
+
+    async function sendToProvider() {
+      if (currentEngineMode === "live") {
+        try {
+          addLog(`IAM API: Routing notify-provider request for Case Reference: ${currentCaseReference}...`, "info");
+          const response = await fetch(`${API_BASE_URL}/api/v1/notify-provider`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ case_reference_id: currentCaseReference })
+          });
+          const resJson = await response.json();
+          addLog(`IAM API Success: Routed securely to Provider: ${resJson.resolved_provider}`, "success");
+          showToast(`Remediation notification transmitted securely to ${resJson.resolved_provider}.`);
+        } catch (err) {
+          addLog(`IAM API Error: ${err.message}`, "danger");
+        }
+      } else {
+        addLog(`IAM Proxy: Resolving Case ID: ${currentCaseReference} back to contact record...`, "info");
+        const rawProvider = document.getElementById('intake-provider').value;
+        setTimeout(() => {
+          addLog(`IAM Proxy: Secure communication routed to Provider: ${rawProvider}.`, "success");
+          showToast(`Remediation notification transmitted securely to ${rawProvider}.`);
+        }, 800);
+      }
+    }
+
+    function replayTransaction() {
+      addLog("Initiating full step-by-step replay of the transaction audit log...", "warning");
+      runPipeline();
+    }
+
+    // ==========================================
+    // IN-BROWSER UNIT TEST SUITE (Verification)
+    // ==========================================
+
+    function runUnitTests() {
+      addLog("Executing Automated Test Suite...", "info");
+      
+      const tests = [
+        {
+          name: "HIPAA PII Redaction Check",
+          desc: "Asserts that name, DOB, and SSN are removed from clinical documentation text.",
+          run: () => {
+            const sampleText = "Patient John Doe (DOB: 10/12/1985, SSN: 123-45-6789) checked in.";
+            const obfuscated = obfuscatePII(sampleText, "John Doe", "10/12/1985", "123-45-6789");
+            
+            const hasName = obfuscated.includes("John") || obfuscated.includes("Doe");
+            const hasDob = obfuscated.includes("10/12/1985");
+            const hasSsn = obfuscated.includes("123-45-6789");
+            
+            return !hasName && !hasDob && !hasSsn;
+          }
+        },
+        {
+          name: "SNOMED CT Symptom Matcher Check",
+          desc: "Asserts that clinical symptoms like 'chest pain' map to the correct SNOMED CT identifiers.",
+          run: () => {
+            const sampleSymptom = "chest pain";
+            const mapped = SNOMED_DB[sampleSymptom];
+            return mapped && mapped.code === "29857009" && mapped.icd === "R07.9";
+          }
+        },
+        {
+          name: "NCCI Bundling Audit Engine Check",
+          desc: "Asserts that E/M codes bundled with procedures (e.g. CPT 17000 and 99213) trigger edits when modifier is missing.",
+          run: () => {
+            const claim = [
+              { cpt: "17000", icd: "L57.0", units: 1, modifier: "", charge: 180 },
+              { cpt: "99213", icd: "I10", units: 1, modifier: "", charge: 150 }
+            ];
+            
+            let triggered = false;
+            for (let i = 0; i < claim.length; i++) {
+              for (let j = 0; j < claim.length; j++) {
+                if (i === j) continue;
+                const pair = `${claim[i].cpt}_${claim[j].cpt}`;
+                if (NCCI_PTP[pair]) {
+                  const rule = NCCI_PTP[pair];
+                  if (rule.modifierRequired === "25" && claim[j].modifier !== "25") {
+                    triggered = true;
+                  }
+                }
+              }
+            }
+            return triggered === true;
+          }
+        },
+        {
+          name: "Medically Unlikely Edit (MUE) Limit Check",
+          desc: "Asserts that unit caps are enforced (e.g., CPT 99213 limit is 1).",
+          run: () => {
+            const cptCode = "99213";
+            const limit = MUE_LIMITS[cptCode];
+            return limit === 1;
+          }
+        },
+        {
+          name: "Local Coverage Determination (LCD) Necessity Check",
+          desc: "Asserts that CPT 93015 (Stress test) fails medical necessity for L70.0 (Acne).",
+          run: () => {
+            const cpt = "93015";
+            const icd = "L70.0";
+            const allowed = MEDICAL_NECESSITY_LCD[cpt];
+            return allowed && !allowed.includes(icd);
+          }
+        },
+        {
+          name: "Provider Fraud, Waste & Abuse (FWA) Upcoding Detector Check",
+          desc: "Asserts that high-risk providers (e.g. John Miller) are flagged correctly based on upcoding thresholds.",
+          run: () => {
+            const providerNpi = "1023948571"; 
+            const pattern = PROVIDER_PATTERNS[providerNpi];
+            return pattern && pattern.risk === "HIGH" && pattern.level5Freq > 50;
+          }
+        }
+      ];
+
+      const container = document.getElementById('test-results-container');
+      container.innerHTML = '';
+      
+      let passedCount = 0;
+      let failedCount = 0;
+
+      tests.forEach(test => {
+        const success = test.run();
+        if (success) passedCount++; else failedCount++;
+        
+        const row = document.createElement('div');
+        row.className = `test-row ${success ? 'passed' : 'failed'}`;
+        row.innerHTML = `
+          <div class="test-info-block">
+            <span class="test-name-text">${test.name}</span>
+            <span class="test-desc-text">${test.desc}</span>
+          </div>
+          <span class="test-status-badge ${success ? 'pass' : 'fail'}">${success ? 'Pass' : 'Fail'}</span>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('test-total-count').innerText = tests.length;
+      document.getElementById('test-passed-count').innerText = passedCount;
+      document.getElementById('test-failed-count').innerText = failedCount;
+
+      addLog(`Unit test execution finished. Passed: ${passedCount}/${tests.length}.`, passedCount === tests.length ? 'success' : 'danger');
+    }
+  </script>
+</body>
+</html>

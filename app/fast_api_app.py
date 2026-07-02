@@ -44,9 +44,11 @@ session_service_uri = None
 
 artifact_service_uri = f"gs://{logs_bucket_name}" if logs_bucket_name else None
 
+from fastapi.responses import HTMLResponse
+
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
-    web=True,
+    web=False,
     trigger_sources=["pubsub"],
     artifact_service_uri=artifact_service_uri,
     allow_origins=allow_origins,
@@ -55,6 +57,14 @@ app: FastAPI = get_fast_api_app(
 )
 app.title = "ClaimGuardAI"
 app.description = "ClaimGuardAI Medical Coding Audit Agent"
+
+
+@app.get("/", response_class=HTMLResponse)
+def read_index():
+    index_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    with open(index_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read(), status_code=200)
+
 
 
 class PubSubNormalizeMiddleware(BaseHTTPMiddleware):
