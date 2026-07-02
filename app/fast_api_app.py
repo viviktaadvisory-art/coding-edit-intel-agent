@@ -53,8 +53,8 @@ app: FastAPI = get_fast_api_app(
     session_service_uri=session_service_uri,
     otel_to_cloud=False,
 )
-app.title = "coding-edit-intel-agent"
-app.description = "API for interacting with the Agent coding-edit-intel-agent"
+app.title = "ClaimGuardAI"
+app.description = "ClaimGuardAI Medical Coding Audit Agent"
 
 
 class PubSubNormalizeMiddleware(BaseHTTPMiddleware):
