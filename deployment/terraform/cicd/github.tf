@@ -140,6 +140,20 @@ resource "github_actions_variable" "logs_bucket_name_prod" {
   depends_on    = [github_repository.repo, data.github_repository.existing_repo]
 }
 
+resource "github_actions_variable" "artifact_registry_repo_name" {
+  repository    = var.repository_name
+  variable_name = "ARTIFACT_REGISTRY_REPO_NAME"
+  value         = "coding-edit-intel-agent"
+  depends_on    = [github_repository.repo, data.github_repository.existing_repo]
+}
+
+resource "github_actions_variable" "container_name" {
+  repository    = var.repository_name
+  variable_name = "CONTAINER_NAME"
+  value         = "coding-edit-intel-agent"
+  depends_on    = [github_repository.repo, data.github_repository.existing_repo]
+}
+
 
 
 resource "github_repository_environment" "production_environment" {
