@@ -8,7 +8,7 @@ language: "python"
 create_params:
   deployment_target: "agent_runtime"
   session_type: "none"
-  cicd_runner: "skip"
+  cicd_runner: "github_actions"
   include_data_ingestion: true
   
   datastore: "agent_platform_vector_search"
