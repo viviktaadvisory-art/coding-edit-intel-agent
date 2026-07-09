@@ -1,6 +1,6 @@
 [project]
 name = "data-ingestion-pipeline"
-version = "0.1.0"
+version = "1.1.0"
 description = "Data ingestion pipeline for RAG retriever"
 readme = "README.md"
 requires-python = ">=3.11, <=3.13"
