@@ -82,7 +82,8 @@ variable "cicd_sa_deployment_required_roles" {
   default = [
     "roles/iam.serviceAccountUser",
     "roles/aiplatform.user",
-    "roles/storage.admin"
+    "roles/storage.admin",
+    "roles/run.developer"
   ]
 }
 
