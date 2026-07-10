@@ -71,6 +71,7 @@ jobs:
       - name: Deploy to Staging (Cloud Run)
         run: |
           uvx google-agents-cli@1.0.0 deploy \
+            --deployment-target cloud_run \
             --project ${{ vars.STAGING_PROJECT_ID }} \
             --region ${{ vars.REGION }} \
             --image ${{ vars.REGION }}-docker.pkg.dev/${{ vars.CICD_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY_REPO_NAME }}/${{ vars.CONTAINER_NAME }}:${{ github.sha }}
