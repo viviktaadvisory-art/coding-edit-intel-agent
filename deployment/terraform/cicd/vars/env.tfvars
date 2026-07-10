@@ -1,3 +1,4 @@
+project_name = "coding-edit-intel"
 staging_project_id = "codingeditintelligence"
 prod_project_id = "codingeditintelligence"
 cicd_runner_project_id = "codingeditintelligence"
